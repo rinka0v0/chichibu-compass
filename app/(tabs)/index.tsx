@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Callout, Marker, Region } from 'react-native-maps';
 
@@ -26,7 +26,11 @@ export default function MapScreen() {
           key={temple.id}
           coordinate={{ latitude: temple.lat, longitude: temple.lng }}
           title={`第${temple.id}番`}
+          tracksViewChanges={false}
         >
+          <View style={styles.pin}>
+            <Text style={styles.pinText}>{temple.id}</Text>
+          </View>
           <Callout>
             <ThemedView style={styles.callout}>
               <ThemedText style={styles.calloutNumber}>第{temple.id}番</ThemedText>
@@ -43,6 +47,26 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   map: {
     flex: 1,
+  },
+  pin: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#c0392b',
+    borderWidth: 2,
+    borderColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  pinText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
   },
   callout: {
     padding: 8,
