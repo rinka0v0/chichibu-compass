@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "現在地を地図上に表示するために位置情報を使用します。"
+      }
     },
     "android": {
       "adaptiveIcon": {

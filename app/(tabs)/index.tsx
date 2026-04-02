@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
+import * as Location from 'expo-location';
 import MapView, { Callout, Marker, Region } from 'react-native-maps';
 
 import { ThemedText } from '@/components/themed-text';
@@ -13,6 +15,10 @@ const INITIAL_REGION: Region = {
 };
 
 export default function MapScreen() {
+  useEffect(() => {
+    Location.requestForegroundPermissionsAsync();
+  }, []);
+
   return (
     <MapView style={styles.map} initialRegion={INITIAL_REGION} showsUserLocation>
       {temples.map((temple) => (
