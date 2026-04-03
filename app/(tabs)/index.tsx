@@ -23,9 +23,13 @@ export default function MapScreen() {
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<Temple | null>(null);
   const [mode, setMode] = useState<'WALKING' | 'DRIVING'>('WALKING');
+  const locationSubscription = useRef<Location.LocationSubscription | null>(null);
 
   useEffect(() => {
     Location.requestForegroundPermissionsAsync();
+    return () => {
+      locationSubscription.current?.remove();
+    };
   }, []);
 
   async function startNavigation(temple: Temple) {
@@ -33,17 +37,22 @@ export default function MapScreen() {
     if (status !== 'granted') {
       await Location.requestForegroundPermissionsAsync();
     }
-    const location = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.High,
-    });
-    setOrigin({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
+    locationSubscription.current?.remove();
+    locationSubscription.current = await Location.watchPositionAsync(
+      { accuracy: Location.Accuracy.High, distanceInterval: 10 },
+      (location) => {
+        setOrigin({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        });
+      },
+    );
     setDestination(temple);
   }
 
   function clearRoute() {
+    locationSubscription.current?.remove();
+    locationSubscription.current = null;
     setOrigin(null);
     setDestination(null);
   }
