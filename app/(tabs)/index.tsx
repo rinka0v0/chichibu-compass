@@ -22,6 +22,7 @@ export default function MapScreen() {
   const mapRef = useRef<MapView>(null);
   const [origin, setOrigin] = useState<LatLng | null>(null);
   const [destination, setDestination] = useState<Temple | null>(null);
+  const [mode, setMode] = useState<'WALKING' | 'DRIVING'>('WALKING');
 
   useEffect(() => {
     Location.requestForegroundPermissionsAsync();
@@ -87,7 +88,7 @@ export default function MapScreen() {
             apikey={GOOGLE_MAPS_API_KEY}
             strokeWidth={4}
             strokeColor="#c0392b"
-            mode="DRIVING"
+            mode={mode}
             onReady={(result) => {
               mapRef.current?.fitToCoordinates(result.coordinates, {
                 edgePadding: { top: 80, right: 40, bottom: 80, left: 40 },
@@ -98,9 +99,29 @@ export default function MapScreen() {
       </MapView>
 
       {destination && (
-        <TouchableOpacity style={styles.clearButton} onPress={clearRoute}>
-          <Text style={styles.clearButtonText}>ルートを消す</Text>
-        </TouchableOpacity>
+        <View style={styles.bottomBar}>
+          <View style={styles.modeToggle}>
+            <TouchableOpacity
+              style={[styles.modeButton, mode === 'WALKING' && styles.modeButtonActive]}
+              onPress={() => setMode('WALKING')}
+            >
+              <Text style={[styles.modeButtonText, mode === 'WALKING' && styles.modeButtonTextActive]}>
+                徒歩
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modeButton, mode === 'DRIVING' && styles.modeButtonActive]}
+              onPress={() => setMode('DRIVING')}
+            >
+              <Text style={[styles.modeButtonText, mode === 'DRIVING' && styles.modeButtonTextActive]}>
+                車
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.clearButton} onPress={clearRoute}>
+            <Text style={styles.clearButtonText}>ルートを消す</Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
@@ -164,10 +185,41 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
   },
-  clearButton: {
+  bottomBar: {
     position: 'absolute',
     bottom: 40,
     alignSelf: 'center',
+    alignItems: 'center',
+    gap: 10,
+  },
+  modeToggle: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  modeButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+  },
+  modeButtonActive: {
+    backgroundColor: '#c0392b',
+  },
+  modeButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
+  modeButtonTextActive: {
+    color: '#fff',
+  },
+  clearButton: {
     backgroundColor: '#fff',
     borderRadius: 20,
     paddingVertical: 10,
