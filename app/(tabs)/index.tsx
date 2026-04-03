@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   navButton: {
-    marginTop: 8,
+    marginTop: 16,
     backgroundColor: '#c0392b',
     borderRadius: 6,
     paddingVertical: 6,
