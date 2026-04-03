@@ -88,7 +88,8 @@ const styles = StyleSheet.create({
   },
   callout: {
     padding: 8,
-    minWidth: 160,
+    width: 180,
+    flexDirection: 'column',
     gap: 2,
   },
   calloutNumber: {
