@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { temples } from '@/data/temples';
 import { Temple } from '@/types/temple';
+import { useVisitedTemples } from '@/contexts/visited-temples-context';
 
 const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY!;
 
@@ -21,6 +22,7 @@ const INITIAL_REGION: Region = {
 export default function MapScreen() {
   const mapRef = useRef<MapView>(null);
   const [origin, setOrigin] = useState<LatLng | null>(null);
+  const { isVisited } = useVisitedTemples();
   const [destination, setDestination] = useState<Temple | null>(null);
   const [mode, setMode] = useState<'WALKING' | 'DRIVING'>('WALKING');
   const locationSubscription = useRef<Location.LocationSubscription | null>(null);
@@ -72,7 +74,7 @@ export default function MapScreen() {
             title={`第${temple.id}番`}
             tracksViewChanges={false}
           >
-            <View style={styles.pin}>
+            <View style={[styles.pin, isVisited(temple.id) && styles.pinVisited]}>
               <Text style={styles.pinText}>{temple.id}</Text>
             </View>
             <Callout>
@@ -157,6 +159,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 2,
     elevation: 3,
+  },
+  pinVisited: {
+    backgroundColor: '#27ae60',
   },
   pinText: {
     color: '#fff',
