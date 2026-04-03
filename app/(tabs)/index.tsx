@@ -39,7 +39,7 @@ export default function MapScreen() {
     }
     locationSubscription.current?.remove();
     locationSubscription.current = await Location.watchPositionAsync(
-      { accuracy: Location.Accuracy.High, distanceInterval: 10 },
+      { accuracy: Location.Accuracy.High, distanceInterval: 50 },
       (location) => {
         setOrigin({
           latitude: location.coords.latitude,
