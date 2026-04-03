@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
 import * as Location from 'expo-location';
-import MapView, { Callout, Marker, Region } from 'react-native-maps';
+import MapView, { Callout, CalloutSubview, Marker, Region } from 'react-native-maps';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -49,12 +49,11 @@ export default function MapScreen() {
               <ThemedText style={styles.calloutNumber}>第{temple.id}番</ThemedText>
               <ThemedText style={styles.calloutName}>{temple.name}</ThemedText>
               <ThemedText style={styles.calloutAddress}>{temple.address}</ThemedText>
-              <TouchableOpacity
-                style={styles.navButton}
-                onPress={() => openMaps(temple.lat, temple.lng, temple.name)}
-              >
-                <Text style={styles.navButtonText}>ナビ開始</Text>
-              </TouchableOpacity>
+              <CalloutSubview onPress={() => openMaps(temple.lat, temple.lng, temple.name)}>
+                <View style={styles.navButton}>
+                  <Text style={styles.navButtonText}>ナビ開始</Text>
+                </View>
+              </CalloutSubview>
             </ThemedView>
           </Callout>
         </Marker>
