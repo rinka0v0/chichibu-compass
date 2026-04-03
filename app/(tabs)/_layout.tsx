@@ -24,7 +24,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="temples"
         options={{
           title: '寺院一覧',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="list.bullet" color={color} />,
