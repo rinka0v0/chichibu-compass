@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Location from 'expo-location';
 import MapView, { Callout, Marker, Region } from 'react-native-maps';
 
@@ -13,6 +13,19 @@ const INITIAL_REGION: Region = {
   latitudeDelta: 0.22,
   longitudeDelta: 0.22,
 };
+
+function openMaps(lat: number, lng: number, name: string) {
+  const label = encodeURIComponent(name);
+  const url = Platform.select({
+    ios: `maps://?daddr=${lat},${lng}&q=${label}`,
+    android: `geo:${lat},${lng}?q=${lat},${lng}(${label})`,
+    default: `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
+  });
+  if (!url) return;
+  Linking.openURL(url).catch(() => {
+    Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`);
+  });
+}
 
 export default function MapScreen() {
   useEffect(() => {
@@ -36,6 +49,12 @@ export default function MapScreen() {
               <ThemedText style={styles.calloutNumber}>第{temple.id}番</ThemedText>
               <ThemedText style={styles.calloutName}>{temple.name}</ThemedText>
               <ThemedText style={styles.calloutAddress}>{temple.address}</ThemedText>
+              <TouchableOpacity
+                style={styles.navButton}
+                onPress={() => openMaps(temple.lat, temple.lng, temple.name)}
+              >
+                <Text style={styles.navButtonText}>ナビ開始</Text>
+              </TouchableOpacity>
             </ThemedView>
           </Callout>
         </Marker>
@@ -84,5 +103,18 @@ const styles = StyleSheet.create({
   calloutAddress: {
     fontSize: 12,
     opacity: 0.7,
+  },
+  navButton: {
+    marginTop: 8,
+    backgroundColor: '#c0392b',
+    borderRadius: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  navButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });
