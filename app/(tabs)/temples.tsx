@@ -1,5 +1,6 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -11,10 +12,11 @@ const TOTAL = temples.length;
 export default function TempleListScreen() {
   const { count, isVisited } = useVisitedTemples();
   const progress = count / TOTAL;
+  const { top } = useSafeAreaInsets();
 
   return (
     <ThemedView style={styles.container}>
-      <View style={styles.progressCard}>
+      <View style={[styles.progressCard, { marginTop: top + 8 }]}>
         <View style={styles.progressHeader}>
           <ThemedText style={styles.progressLabel}>巡礼進捗</ThemedText>
           <ThemedText style={styles.progressCount}>
@@ -66,7 +68,6 @@ const styles = StyleSheet.create({
   },
   progressCard: {
     marginHorizontal: 16,
-    marginTop: 16,
     marginBottom: 8,
     padding: 14,
     backgroundColor: '#fff5f5',
