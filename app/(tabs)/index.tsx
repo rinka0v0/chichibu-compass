@@ -368,11 +368,11 @@ const styles = StyleSheet.create({
   // 現在地ボタン
   locationButton: {
     position: 'absolute',
-    right: 16,
+    left: 16,
     bottom: 140,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
