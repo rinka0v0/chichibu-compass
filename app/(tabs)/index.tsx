@@ -1,16 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Location from 'expo-location';
-import MapView, { Callout, CalloutSubview, LatLng, Marker, Region } from 'react-native-maps';
-import MapViewDirections from 'react-native-maps-directions';
+import MapView, { Callout, CalloutSubview, LatLng, Marker, Polyline, Region } from 'react-native-maps';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { temples } from '@/data/temples';
 import { Temple } from '@/types/temple';
 import { useVisitedTemples } from '@/contexts/visited-temples-context';
-
-const GOOGLE_MAPS_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY!;
+import { fetchRoute, ValhallaCosting } from '@/utils/valhalla';
 
 const INITIAL_REGION: Region = {
   latitude: 36.0,
@@ -25,7 +23,10 @@ export default function MapScreen() {
   const { isVisited } = useVisitedTemples();
   const [destination, setDestination] = useState<Temple | null>(null);
   const [mode, setMode] = useState<'WALKING' | 'DRIVING'>('WALKING');
+  const [routeCoords, setRouteCoords] = useState<LatLng[]>([]);
   const locationSubscription = useRef<Location.LocationSubscription | null>(null);
+
+  const valhallaCosting: ValhallaCosting = mode === 'WALKING' ? 'pedestrian' : 'auto';
 
   useEffect(() => {
     Location.requestForegroundPermissionsAsync();
@@ -33,6 +34,22 @@ export default function MapScreen() {
       locationSubscription.current?.remove();
     };
   }, []);
+
+  useEffect(() => {
+    if (!origin || !destination) {
+      setRouteCoords([]);
+      return;
+    }
+    fetchRoute(origin, { latitude: destination.lat, longitude: destination.lng }, valhallaCosting)
+      .then((coords) => {
+        setRouteCoords(coords);
+        mapRef.current?.fitToCoordinates(coords, {
+          edgePadding: { top: 80, right: 40, bottom: 80, left: 40 },
+          animated: true,
+        });
+      })
+      .catch((err) => console.warn('Valhalla route error:', err));
+  }, [origin, destination, valhallaCosting]);
 
   async function startNavigation(temple: Temple) {
     const { status } = await Location.getForegroundPermissionsAsync();
@@ -57,6 +74,7 @@ export default function MapScreen() {
     locationSubscription.current = null;
     setOrigin(null);
     setDestination(null);
+    setRouteCoords([]);
   }
 
   return (
@@ -92,19 +110,11 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {origin && destination && (
-          <MapViewDirections
-            origin={origin}
-            destination={{ latitude: destination.lat, longitude: destination.lng }}
-            apikey={GOOGLE_MAPS_API_KEY}
+        {routeCoords.length > 0 && (
+          <Polyline
+            coordinates={routeCoords}
             strokeWidth={4}
             strokeColor="#c0392b"
-            mode={mode}
-            onReady={(result) => {
-              mapRef.current?.fitToCoordinates(result.coordinates, {
-                edgePadding: { top: 80, right: 40, bottom: 80, left: 40 },
-              });
-            }}
           />
         )}
       </MapView>
