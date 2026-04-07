@@ -368,8 +368,8 @@ const styles = StyleSheet.create({
   // 現在地ボタン
   locationButton: {
     position: 'absolute',
-    left: 16,
-    bottom: 140,
+    right: 16,
+    bottom: 16,
     width: 52,
     height: 52,
     borderRadius: 26,
